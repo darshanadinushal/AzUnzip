@@ -21,7 +21,7 @@ param location string = resourceGroup().location
 param PasswordForZips string
 
 var suffix = substring(toLower(uniqueString(resourceGroup().id, location)), 0, 5)
-var funcAppName = toLower(concat(baseName, suffix))
+var funcAppName = toLower('${baseName}${suffix}')
 var KeyVaultName = toLower('${baseName}-kv-${suffix}')
 var funcStorageName = toLower('${substring(baseName, 0, min(length(baseName), 16))}stg${suffix}')
 var serverFarmName = '${substring(baseName, 0, min(length(baseName), 14))}-srv-${suffix}'
