@@ -28,6 +28,121 @@ var serverFarmName = '${substring(baseName, 0, min(length(baseName), 14))}-srv-$
 var repoURL = 'https://github.com/darshanadinushal/AzUnzip.git'
 var fileStorageName = toLower('${substring(MonitorStorageName, 0, min(length(MonitorStorageName), 16))}stg${suffix}')
 
+
+
+resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2018-11-01' = {
+  parent: funcApp
+  name: 'web'
+  properties: {
+    repoUrl: repoURL
+    branch: GitHubBranch
+    isManualIntegration: true
+  }
+}
+
+resource funcStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
+  name: funcStorageName
+  location: location
+  tags: {
+    displayName: 'funStorageName'
+  }
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+}
+
+resource serverFarm 'Microsoft.Web/serverfarms@2018-02-01' = {
+  name: serverFarmName
+  location: location
+  sku: {
+    name: 'Y1'
+    tier: 'Dynamic'
+  }
+  properties: {}
+}
+
+resource fileStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
+  name: fileStorageName
+  location: location
+  tags: {
+    displayName: fileStorageName
+  }
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+}
+
+resource fileStorageName_default_input_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2018-07-01' = {
+  name: '${fileStorageName}/default/input-files'
+  properties: {
+    publicAccess: 'Blob'
+  }
+  dependsOn: [
+    fileStorage
+  ]
+}
+
+resource fileStorageName_default_output_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2018-07-01' = {
+  name: '${fileStorageName}/default/output-files'
+  properties: {
+    publicAccess: 'Blob'
+  }
+  dependsOn: [
+    fileStorage
+  ]
+}
+
+resource KeyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
+  name: KeyVaultName
+  location: location
+  properties: {
+    enabledForDeployment: true
+    enabledForDiskEncryption: true
+    enabledForTemplateDeployment: true
+    tenantId: subscription().tenantId
+    accessPolicies: []
+    sku: {
+      name: KeyVaultSkuName
+      family: 'A'
+    }
+  }
+  dependsOn: []
+}
+
+var endpoint = KeyVault.properties.vaultUri
+
+
+resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2018-02-14' = {
+  parent: KeyVault
+  name: 'add'
+  properties: {
+    accessPolicies: [
+      {
+        tenantId: reference(funcApp.id, '2018-11-01', 'Full').identity.tenantId
+        objectId: reference(funcApp.id, '2018-11-01', 'Full').identity.principalId
+        permissions: {
+          secrets: [
+            'list'
+            'get'
+          ]
+        }
+      }
+    ]
+  }
+}
+
+resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = {
+  parent: KeyVault
+  name: 'ZipPassword'
+  location: location
+  properties: {
+    value: PasswordForZips
+  }
+}
+
+
 resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
   name: funcAppName
   location: location
@@ -77,7 +192,7 @@ resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
         }
         {
           name: 'KeyVaultUri'
-          value: 'https://${KeyVaultName}.vault.azure.net/'
+          value: endpoint
         }
       ]
     }
@@ -88,116 +203,3 @@ resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
   ]
 }
 
-resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2018-11-01' = {
-  parent: funcApp
-  name: 'web'
-  properties: {
-    repoUrl: repoURL
-    branch: GitHubBranch
-    publishRunbook: true
-    isManualIntegration: true
-  }
-}
-
-resource funcStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
-  name: funcStorageName
-  location: location
-  tags: {
-    displayName: 'funStorageName'
-  }
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-}
-
-resource serverFarm 'Microsoft.Web/serverfarms@2018-02-01' = {
-  name: serverFarmName
-  location: location
-  sku: {
-    name: 'Y1'
-    tier: 'Dynamic'
-  }
-  properties: {
-    name: serverFarmName
-    computeMode: 'Dynamic'
-  }
-}
-
-resource fileStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
-  name: fileStorageName
-  location: location
-  tags: {
-    displayName: fileStorageName
-  }
-  sku: {
-    name: 'Standard_LRS'
-  }
-  kind: 'StorageV2'
-}
-
-resource fileStorageName_default_input_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2018-07-01' = {
-  name: '${fileStorageName}/default/input-files'
-  properties: {
-    publicAccess: 'Blob'
-  }
-  dependsOn: [
-    fileStorage
-  ]
-}
-
-resource fileStorageName_default_output_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2018-07-01' = {
-  name: '${fileStorageName}/default/output-files'
-  properties: {
-    publicAccess: 'Blob'
-  }
-  dependsOn: [
-    fileStorage
-  ]
-}
-
-resource KeyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
-  name: KeyVaultName
-  location: location
-  properties: {
-    enabledForDeployment: true
-    enabledForDiskEncryption: true
-    enabledForTemplateDeployment: true
-    tenantId: subscription().tenantId
-    accessPolicies: []
-    resources: []
-    sku: {
-      name: KeyVaultSkuName
-      family: 'A'
-    }
-  }
-  dependsOn: []
-}
-
-resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2018-02-14' = {
-  parent: KeyVault
-  name: 'add'
-  properties: {
-    accessPolicies: [
-      {
-        tenantId: reference(funcApp.id, '2018-11-01', 'Full').identity.tenantId
-        objectId: reference(funcApp.id, '2018-11-01', 'Full').identity.principalId
-        permissions: {
-          secrets: [
-            'list'
-            'get'
-          ]
-        }
-      }
-    ]
-  }
-}
-
-resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = {
-  parent: KeyVault
-  name: 'ZipPassword'
-  location: location
-  properties: {
-    value: PasswordForZips
-  }
-}
