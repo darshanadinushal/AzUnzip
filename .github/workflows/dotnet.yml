@@ -1,0 +1,45 @@
+name: Az-unzip-arm-pipeline
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    env:
+      ResourceGroupName: AzUnzipEverything-sg
+      ResourceGroupLocation: "westeurope"
+    steps:
+    - uses: actions/checkout@master
+    - uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+        enable-AzPSSession: true   
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 6.0.x
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --no-restore
+    - uses: Azure/CLI@v1
+      with:
+        inlineScript: |
+          #!/bin/bash
+          az group create --name ${{ env.ResourceGroupName }} --location ${{ env.ResourceGroupLocation }}
+          echo "Azure resource group created." 
+          
+    - uses: Azure/arm-deploy@v1.0.8
+      name: Deploy Azure Resource Manager (ARM) Template
+      id: deploy
+      with:
+        scope: resourcegroup
+        subscriptionId: 6a96e058-3943-4d73-83bd-4ca24bad6230
+        resourceGroupName: ${{ env.ResourceGroupName }}
+        template: ./deployment/deployAzure.json
+        parameters: ./deployment/deployAzure.parameters.json
+    
