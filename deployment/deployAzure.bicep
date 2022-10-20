@@ -7,13 +7,6 @@ param GitHubBranch string = 'master'
 @description('Name of the storage account where the files will be drop and unziped. (Default = dropzone).')
 param MonitorStorageName string = 'dropzone'
 
-@description('Specifies whether the key vault is a standard vault or a premium vault.')
-@allowed([
-  'Standard'
-  'Premium'
-])
-param KeyVaultSkuName string = 'Standard'
-
 param location string = resourceGroup().location
 
 @description('Password for unzipping secure/encrypted zip files')
@@ -104,7 +97,7 @@ resource KeyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
     tenantId: subscription().tenantId
     accessPolicies: []
     sku: {
-      name: KeyVaultSkuName
+      name: 'standard'
       family: 'A'
     }
   }
@@ -136,7 +129,6 @@ resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2018-02-14' 
 resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = {
   parent: KeyVault
   name: 'ZipPassword'
-  location: location
   properties: {
     value: PasswordForZips
   }
