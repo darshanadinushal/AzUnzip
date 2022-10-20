@@ -1,0 +1,18 @@
+{
+    "$": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "baseName": {
+            "value": "UnzipEverything"
+        },
+        "GitHubBranch": {
+            "value": "main"
+        },
+        "MonitorStorageName": {
+            "value": "dropzone"
+        },
+        "PasswordForZips": {
+            "value": "he@vySmash22"
+        }
+    }
+}
