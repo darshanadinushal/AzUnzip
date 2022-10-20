@@ -14,11 +14,13 @@ param MonitorStorageName string = 'dropzone'
 ])
 param KeyVaultSkuName string = 'Standard'
 
+param location string = resourceGroup().location
+
 @description('Password for unzipping secure/encrypted zip files')
 @secure()
 param PasswordForZips string
 
-var suffix = substring(toLower(uniqueString(resourceGroup().id, resourceGroup().location)), 0, 5)
+var suffix = substring(toLower(uniqueString(resourceGroup().id, location)), 0, 5)
 var funcAppName = toLower(concat(baseName, suffix))
 var KeyVaultName = toLower('${baseName}-kv-${suffix}')
 var funcStorageName = toLower('${substring(baseName, 0, min(length(baseName), 16))}stg${suffix}')
@@ -28,7 +30,7 @@ var fileStorageName = toLower('${substring(MonitorStorageName, 0, min(length(Mon
 
 resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
   name: funcAppName
-  location: resourceGroup().location
+  location: location
   kind: 'functionapp'
   identity: {
     type: 'SystemAssigned'
@@ -99,7 +101,7 @@ resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2018-11-01' = {
 
 resource funcStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
   name: funcStorageName
-  location: resourceGroup().location
+  location: location
   tags: {
     displayName: 'funStorageName'
   }
@@ -111,7 +113,7 @@ resource funcStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
 
 resource serverFarm 'Microsoft.Web/serverfarms@2018-02-01' = {
   name: serverFarmName
-  location: resourceGroup().location
+  location: location
   sku: {
     name: 'Y1'
     tier: 'Dynamic'
@@ -124,7 +126,7 @@ resource serverFarm 'Microsoft.Web/serverfarms@2018-02-01' = {
 
 resource fileStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
   name: fileStorageName
-  location: resourceGroup().location
+  location: location
   tags: {
     displayName: fileStorageName
   }
@@ -156,7 +158,7 @@ resource fileStorageName_default_output_files 'Microsoft.Storage/storageAccounts
 
 resource KeyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
   name: KeyVaultName
-  location: resourceGroup().location
+  location: location
   properties: {
     enabledForDeployment: true
     enabledForDiskEncryption: true
@@ -194,7 +196,7 @@ resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2018-02-14' 
 resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = {
   parent: KeyVault
   name: 'ZipPassword'
-  location: resourceGroup().location
+  location: location
   properties: {
     value: PasswordForZips
   }
