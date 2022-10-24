@@ -26,6 +26,15 @@ var subnet2Name = toLower('${baseName}-sub2-${suffix}')
 var nsgName = toLower('${baseName}-nsg-${suffix}')
 var sharedRules = loadJsonContent('./shared-nsg-rules.json', 'securityRules')
 
+var customRules = []
+resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+  name: nsgName
+  location: location
+  properties: {
+    securityRules: concat(sharedRules, customRules)
+  }
+}
+
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   name: virtualNetworkName
   location: location
@@ -40,6 +49,9 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
         name: subnet1Name
         properties: {
           addressPrefix: '10.0.0.0/24'
+          networkSecurityGroup: nsg.id == '' ? null : {
+            id: nsg.id
+          } 
         }
       }
       {
@@ -60,14 +72,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   }
 }
 
-var customRules = []
-resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
-  name: nsgName
-  location: location
-  properties: {
-    securityRules: concat(sharedRules, customRules)
-  }
-}
+
 
 
 
