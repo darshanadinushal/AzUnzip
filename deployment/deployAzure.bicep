@@ -20,6 +20,12 @@ param PasswordForZips string
 ])
 param publicNetworkAccess string = 'Enabled'
 
+@description('The name for the database')
+param databaseName string
+
+@description('The name for the SQL API container')
+param containerName string
+
 var suffix = substring(toLower(uniqueString(resourceGroup().id, location)), 0, 5)
 var funcAppName = toLower('${baseName}${suffix}')
 var KeyVaultName = toLower('${baseName}-kv-${suffix}')
@@ -98,6 +104,7 @@ resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
       defaultConsistencyLevel: 'Session'
     }
     locations: locations
+    enableFreeTier: true
     databaseAccountOfferType: 'Standard'
     enableAutomaticFailover: false
     enableMultipleWriteLocations: false
@@ -105,6 +112,45 @@ resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
   }
 }
 
+
+resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-05-15' = {
+  parent: databaseAccount
+  name: databaseName
+  properties: {
+    resource: {
+      id: databaseName
+    }
+  }
+}
+
+resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2022-05-15' = {
+  parent: database
+  name: containerName
+  properties: {
+    resource: {
+      id: containerName
+      partitionKey: {
+        paths: [
+          '/documentId'
+        ]
+        kind: 'Hash'
+      }
+      indexingPolicy: {
+        indexingMode: 'consistent'
+        includedPaths: [
+          {
+            path: '/*'
+          }
+        ]
+        excludedPaths: [
+          {
+            path: '/_etag/?'
+          }
+        ]
+      }
+    }
+  }
+}
 
 
 

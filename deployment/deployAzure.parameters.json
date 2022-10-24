@@ -13,6 +13,12 @@
         },
         "PasswordForZips": {
             "value": "he@vySmash22"
+        },
+        "databaseName": {
+            "value": "unzipdb"
+        },
+        "containerName": {
+            "value": "documentinfo"
         }
     }
 }
