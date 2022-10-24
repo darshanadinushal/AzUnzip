@@ -15,7 +15,7 @@ param PasswordForZips string
 
 @description('Password for unzipping secure/encrypted zip files')
 @secure()
-param CosmosDbConnection string
+param CosmosDbConnection object
 
 @description('Enable public network traffic to access the account; if set to Disabled, public network traffic will be blocked even before the private endpoint is created')
 @allowed([
@@ -43,7 +43,7 @@ var subnet2Name = toLower('${baseName}-sub2-${suffix}')
 var nsgName = toLower('${baseName}-nsg-${suffix}')
 var sharedRules = loadJsonContent('./shared-nsg-rules.json', 'securityRules')
 var databaseAccountName = toLower('${baseName}-consmosdb-${suffix}')
-var dbEndpointName = toLower('${baseName}-consmosdb-${suffix}')
+// var dbEndpointName = toLower('${baseName}-consmosdb-${suffix}')
 
 
 var customRules = []
