@@ -23,6 +23,8 @@ var fileStorageName = toLower('${substring(MonitorStorageName, 0, min(length(Mon
 var virtualNetworkName = toLower('${baseName}-vpn-${suffix}')
 var subnet1Name = toLower('${baseName}-sub1-${suffix}')
 var subnet2Name = toLower('${baseName}-sub2-${suffix}')
+var nsgName = toLower('${baseName}-nsg-${suffix}')
+var sharedRules = loadJsonContent('./shared-nsg-rules.json', 'securityRules')
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
   name: virtualNetworkName
@@ -57,6 +59,17 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
     name: subnet2Name
   }
 }
+
+var customRules = []
+resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+  name: nsgName
+  location: location
+  properties: {
+    securityRules: concat(sharedRules, customRules)
+  }
+}
+
+
 
 resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2018-11-01' = {
   parent: funcApp
