@@ -13,6 +13,13 @@ param location string = resourceGroup().location
 @secure()
 param PasswordForZips string
 
+@description('Enable public network traffic to access the account; if set to Disabled, public network traffic will be blocked even before the private endpoint is created')
+@allowed([
+  'Enabled'
+  'Disabled'
+])
+param publicNetworkAccess string = 'Enabled'
+
 var suffix = substring(toLower(uniqueString(resourceGroup().id, location)), 0, 5)
 var funcAppName = toLower('${baseName}${suffix}')
 var KeyVaultName = toLower('${baseName}-kv-${suffix}')
@@ -25,6 +32,8 @@ var subnet1Name = toLower('${baseName}-sub1-${suffix}')
 var subnet2Name = toLower('${baseName}-sub2-${suffix}')
 var nsgName = toLower('${baseName}-nsg-${suffix}')
 var sharedRules = loadJsonContent('./shared-nsg-rules.json', 'securityRules')
+var consmosdbName = toLower('${baseName}-consmosdb-${suffix}')
+
 
 var customRules = []
 resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
@@ -71,6 +80,31 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
     name: subnet2Name
   }
 }
+
+var locations = [
+  {
+    locationName: location
+    failoverPriority: 0
+    isZoneRedundant: false
+  }
+]
+
+resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
+  name: consmosdbName
+  location: location
+  kind: 'GlobalDocumentDB'
+  properties: {
+    consistencyPolicy: {
+      defaultConsistencyLevel: 'Session'
+    }
+    locations: locations
+    databaseAccountOfferType: 'Standard'
+    enableAutomaticFailover: false
+    enableMultipleWriteLocations: false
+    publicNetworkAccess: publicNetworkAccess
+  }
+}
+
 
 
 
