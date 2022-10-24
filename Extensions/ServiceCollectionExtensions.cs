@@ -63,20 +63,6 @@ namespace AzUnzipEverything.Extensions
         
 
 
-        public static async Task<CosmosDbService> InitializeCosmosClientInstanceAsync(IConfigurationBuilder configurationBuilder)
-        {
-            var config = configurationBuilder.Build();
-
-            string databaseName = config.GetSection("DatabaseName").Value;
-            string containerName = config.GetSection("ContainerName").Value;
-            string account = config.GetSection("Account").Value;
-            string key = config.GetSection("Key").Value;
-            Microsoft.Azure.Cosmos.CosmosClient client = new Microsoft.Azure.Cosmos.CosmosClient(account, key);
-            CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
-            Microsoft.Azure.Cosmos.DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
-            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/documentId");
-
-            return cosmosDbService;
-        }
+       
     }
 }

@@ -117,6 +117,7 @@ resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
   }
 }
 
+
 // resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
 //   name: dbEndpointName
 //   location: location
