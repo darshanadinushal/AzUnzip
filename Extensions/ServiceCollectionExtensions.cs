@@ -1,5 +1,6 @@
 ﻿using AzUnzipEverything.Abstractions;
 using AzUnzipEverything.Implementations;
+using AzUnzipEverything.Infrastructure.CosmosDb;
 using AzUnzipEverything.Infrastructure.Settings;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage;
 using Microsoft.WindowsAzure.Storage.Blob;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace AzUnzipEverything.Extensions
 {
@@ -56,6 +58,25 @@ namespace AzUnzipEverything.Extensions
                 var blobClient = storageAccount.CreateCloudBlobClient();
                 return blobClient.GetContainerReference(config["destinationContainer"]);
             });
+        }
+
+        
+
+
+        public static async Task<CosmosDbService> InitializeCosmosClientInstanceAsync(IConfigurationBuilder configurationBuilder)
+        {
+            var config = configurationBuilder.Build();
+
+            string databaseName = config.GetSection("DatabaseName").Value;
+            string containerName = config.GetSection("ContainerName").Value;
+            string account = config.GetSection("Account").Value;
+            string key = config.GetSection("Key").Value;
+            Microsoft.Azure.Cosmos.CosmosClient client = new Microsoft.Azure.Cosmos.CosmosClient(account, key);
+            CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
+            Microsoft.Azure.Cosmos.DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
+            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/documentId");
+
+            return cosmosDbService;
         }
     }
 }

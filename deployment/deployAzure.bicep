@@ -13,6 +13,10 @@ param location string = resourceGroup().location
 @secure()
 param PasswordForZips string
 
+@description('Password for unzipping secure/encrypted zip files')
+@secure()
+param CosmosDbConnection string
+
 @description('Enable public network traffic to access the account; if set to Disabled, public network traffic will be blocked even before the private endpoint is created')
 @allowed([
   'Enabled'
@@ -38,7 +42,8 @@ var subnet1Name = toLower('${baseName}-sub1-${suffix}')
 var subnet2Name = toLower('${baseName}-sub2-${suffix}')
 var nsgName = toLower('${baseName}-nsg-${suffix}')
 var sharedRules = loadJsonContent('./shared-nsg-rules.json', 'securityRules')
-var consmosdbName = toLower('${baseName}-consmosdb-${suffix}')
+var databaseAccountName = toLower('${baseName}-consmosdb-${suffix}')
+var dbEndpointName = toLower('${baseName}-consmosdb-${suffix}')
 
 
 var customRules = []
@@ -96,7 +101,7 @@ var locations = [
 ]
 
 resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
-  name: consmosdbName
+  name: databaseAccountName
   location: location
   kind: 'GlobalDocumentDB'
   properties: {
@@ -112,6 +117,27 @@ resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
   }
 }
 
+// resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
+//   name: dbEndpointName
+//   location: location
+//   properties: {
+//     subnet: {
+//     //  id: resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, subnet1Name)
+//     id: virtualNetwork::subnet1.id
+//     }
+//     privateLinkServiceConnections: [
+//       {
+//         name: 'MyConnection'
+//         properties: {
+//           privateLinkServiceId: databaseAccount.id
+//           groupIds: [
+//             'Sql'
+//           ]
+//         }
+//       }
+//     ]
+//   }
+// }
 
 resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-05-15' = {
   parent: databaseAccount
@@ -264,6 +290,14 @@ resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2016-10-01'
   name: 'ZipPassword'
   properties: {
     value: PasswordForZips
+  }
+}
+
+resource KeyVaultName_CosmosDb 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = {
+  parent: KeyVault
+  name: 'CosmosDb'
+  properties: {
+    value: CosmosDbConnection
   }
 }
 
