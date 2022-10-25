@@ -1,4 +1,5 @@
 ﻿using AzUnzipEverything.Abstractions;
+using AzUnzipEverything.Infrastructure.CosmosDb;
 using AzUnzipEverything.Infrastructure.Settings;
 using Microsoft.Extensions.Logging;
 using Microsoft.WindowsAzure.Storage.Blob;
@@ -16,7 +17,7 @@ namespace AzUnzipEverything.Implementations
         private readonly SecretSettings _secretSettings;
         private readonly ILogger<FileProcessorBase> _logger;
 
-        public RarFileProcessor(CloudBlobContainer destinationContainer, SecretSettings secretSettings, ILogger<FileProcessorBase> logger) : base(destinationContainer, logger)
+        public RarFileProcessor(CloudBlobContainer destinationContainer, SecretSettings secretSettings, ILogger<FileProcessorBase> logger, ICosmosDbService cosmosDbService) : base(destinationContainer, logger, cosmosDbService)
         {
             _secretSettings = secretSettings;
             _logger = logger;

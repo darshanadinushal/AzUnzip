@@ -24,12 +24,12 @@ namespace AzUnzipEverything.Extensions
                 {
                     Constants.SupportedExtensions.Zip,
                     new ZipFileProcessor(provider.GetService<CloudBlobContainer>(),
-                        provider.GetService<SecretSettings>(), provider.GetService<ILogger<ZipFileProcessor>>())
+                        provider.GetService<SecretSettings>(), provider.GetService<ILogger<ZipFileProcessor>>(),provider.GetService<ICosmosDbService>())
                 },
                 {
                     Constants.SupportedExtensions.Rar,
                     new RarFileProcessor(provider.GetService<CloudBlobContainer>(),
-                        provider.GetService<SecretSettings>(), provider.GetService<ILogger<RarFileProcessor>>())
+                        provider.GetService<SecretSettings>(), provider.GetService<ILogger<RarFileProcessor>>(),provider.GetService<ICosmosDbService>())
                 }
             });
         }
