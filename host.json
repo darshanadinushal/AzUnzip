@@ -2,18 +2,15 @@
   "version": "2.0",
   "logging": {
     "logLevel": {
-      "default": "Warning",
+      "default": "Information",
+      "Host": "Error",
       "Function": "Error",
-      "Host.Aggregator": "Error",
-      "Host.Results": "Information",
-      "Function.Function1": "Information",
-      "Function.Function1.User": "Error"
+      "Host.Aggregator": "Information"
     },
     "applicationInsights": {
       "samplingSettings": {
         "isEnabled": true,
-        "maxTelemetryItemsPerSecond": 1,
-        "excludedTypes": "Exception"
+        "maxTelemetryItemsPerSecond": 1
       }
     }
   }

@@ -20,8 +20,6 @@ namespace AzUnzipEverything
                 .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            builder.Services.AddApplicationInsightsTelemetry();
-
             builder.Services.AddAzureKeyVaultConfiguration(configurationBuilder);
             
             builder.Services.AddBlobStorage();

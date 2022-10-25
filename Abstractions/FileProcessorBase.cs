@@ -50,7 +50,7 @@ namespace AzUnzipEverything.Abstractions
 
                     var blockBlob = _destinationContainer.GetBlockBlobReference(archiveEntry.Key);
                     await using var fileStream = archiveEntry.OpenEntryStream();
-                    await blockBlob.UploadFromStreamAsync(fileStream);
+                   // await blockBlob.UploadFromStreamAsync(fileStream);
                     await _cosmosDbService.AddDocumentInfoAsync(documentinfo);
                     _logger.LogInformation(
                         $"{archiveEntry.Key} processed successfully and moved to destination container");
