@@ -21,5 +21,8 @@ namespace AzUnzipEverything.Models
 
         [JsonProperty(PropertyName = "isComplete")]
         public bool Completed { get; set; }
+
+        [JsonProperty(PropertyName = "size")]
+        public long Size { get; set; }
     }
 }
