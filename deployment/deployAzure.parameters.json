@@ -21,7 +21,7 @@
             "value": "documentinfo"
         },
         "CosmosDbConnection" : {
-            "value": "AccountEndpoint=https://unzipeverything-consmosdb-efx7q.documents.azure.com:443/;AccountKey=zdBnzvLgkTGdQtWFSsMLWDu7dkTvvxGCimEVdZBBSzZENt3TprdNnRgD6M0jFWV4l5s8xk41dDCqmOL3Q2yTCw==;"
+            "value": "AccountEndpoint=https://unzipeverything-consmosdb-efx7q.documents.azure.com:443/;AccountKey=0MO95iE5uuES2cEo6P6ct1ntYjfwS94NtaR8kYNyOZDMO2Js6r5dY7SyBjL8J43UG4xWibiiRRgLAZ8Na6XCUg==;"
         }
     }
 }
