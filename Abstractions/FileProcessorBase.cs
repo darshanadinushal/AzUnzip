@@ -29,29 +29,40 @@ namespace AzUnzipEverything.Abstractions
 
         protected async Task ExtractArchiveFiles(IEnumerable<IArchiveEntry> archiveEntries)
         {
-            foreach (var archiveEntry in archiveEntries.Where(entry => !entry.IsDirectory))
+            try
             {
-                _logger.LogInformation($"Now processing {archiveEntry.Key}");
-
-                var documentinfo = new DocumentInfo
+                _logger.LogInformation($"Start ExtractArchiveFiles");
+                foreach (var archiveEntry in archiveEntries.Where(entry => !entry.IsDirectory))
                 {
-                    Id = Guid.NewGuid().ToString(),
-                    documentId = archiveEntry.Key,
-                    Completed =true,
-                    Size= archiveEntry.Size,
-                    Name = $"file{DateTime.Now.ToLongTimeString()}",
-                    Description ="Upload"
-                };
+                    _logger.LogInformation($"Now processing {archiveEntry.Key}");
 
-                NameValidator.ValidateBlobName(archiveEntry.Key);
+                    var documentinfo = new DocumentInfo
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        documentId = archiveEntry.Key,
+                        Completed = true,
+                        Size = archiveEntry.Size,
+                        Name = $"file{DateTime.Now.ToLongTimeString()}",
+                        Description = "Upload"
+                    };
 
-                var blockBlob = _destinationContainer.GetBlockBlobReference(archiveEntry.Key);
-                await using var fileStream = archiveEntry.OpenEntryStream();
-                await blockBlob.UploadFromStreamAsync(fileStream);
-                await _cosmosDbService.AddDocumentInfoAsync(documentinfo);
-                _logger.LogInformation(
-                    $"{archiveEntry.Key} processed successfully and moved to destination container");
+                    NameValidator.ValidateBlobName(archiveEntry.Key);
+
+                    var blockBlob = _destinationContainer.GetBlockBlobReference(archiveEntry.Key);
+                    await using var fileStream = archiveEntry.OpenEntryStream();
+                    await blockBlob.UploadFromStreamAsync(fileStream);
+                    await _cosmosDbService.AddDocumentInfoAsync(documentinfo);
+                    _logger.LogInformation(
+                        $"{archiveEntry.Key} processed successfully and moved to destination container");
+                }
             }
+            catch (Exception ex)
+            {
+                _logger.LogError("Error log ExtractArchiveFiles");
+                _logger.LogError(ex.StackTrace);
+                _logger.LogError(ex.Message);
+            }
+            
         }
     }
 }

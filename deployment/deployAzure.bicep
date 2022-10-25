@@ -303,6 +303,16 @@ resource KeyVaultName_CosmosDb 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = 
   }
 }
 
+resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
+  name: funcAppName
+  location: location
+  kind: 'web'
+  properties: {
+    Application_Type: 'web'
+    Request_Source: 'rest'
+  }
+}
+
 
 resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
   name: funcAppName
@@ -338,6 +348,10 @@ resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
         {
           name: 'FUNCTIONS_WORKER_RUNTIME'
           value: 'dotnet'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.properties.InstrumentationKey
         }
         {
           name: 'cloud5mins_storage'
