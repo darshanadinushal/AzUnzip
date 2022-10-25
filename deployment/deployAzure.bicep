@@ -44,7 +44,8 @@ var nsgName = toLower('${baseName}-nsg-${suffix}')
 var sharedRules = loadJsonContent('./shared-nsg-rules.json', 'securityRules')
 var databaseAccountName = toLower('${baseName}-consmosdb-${suffix}')
 var dbEndpointName = toLower('${baseName}-consmosdb-${suffix}')
-
+var privatelinkEndpoint ='privatelink.documents.azure.com'
+var vnetLinkName =toLower('${baseName}-vlink-${suffix}')
 
 var customRules = []
 resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
@@ -140,6 +141,41 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
     ]
   }
 }
+
+resource privateDnsZones 'Microsoft.Network/privateDnsZones@2020-06-01' = {
+  name: privatelinkEndpoint
+  location: location
+  properties: {}
+}
+
+resource privatelinkvnet 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
+  name: vnetLinkName
+  location: location
+  parent: privateDnsZones
+  properties: {
+    registrationEnabled: false
+    virtualNetwork: {
+      id: virtualNetwork.id
+    }
+  }
+}
+
+resource privateDnsZone 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-05-01' = {
+  name: toLower('${vnetLinkName}-privateDnsZone-${suffix}')
+  parent: privateEndpoint
+  properties: {
+    privateDnsZoneConfigs: [
+      {
+        name: 'privateDnsZoneConfigs'
+        properties: {
+          privateDnsZoneId: privateDnsZones.id
+        }
+      }
+    ]
+  }
+}
+
+
 
 resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-05-15' = {
   parent: databaseAccount
