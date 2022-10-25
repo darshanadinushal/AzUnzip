@@ -33,16 +33,13 @@ namespace AzUnzipEverything
         private  async Task<CosmosDbService> InitializeCosmosClientInstanceAsync(IConfigurationBuilder configurationBuilder)
         {
             var config = configurationBuilder.Build();
-            IConfigurationSection configurationSection = config.GetSection("CosmosDb");
+            string configurationSection = config["CosmosDb"];
 
-            string databaseName = configurationSection.GetSection("DatabaseName").Value;
-            string containerName = configurationSection.GetSection("ContainerName").Value;
-            string account = configurationSection.GetSection("Account").Value;
-            string key = configurationSection.GetSection("Key").Value;
-            Microsoft.Azure.Cosmos.CosmosClient client = new Microsoft.Azure.Cosmos.CosmosClient(account, key);
-            CosmosDbService cosmosDbService = new CosmosDbService(client, databaseName, containerName);
-            Microsoft.Azure.Cosmos.DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync(databaseName);
-            await database.Database.CreateContainerIfNotExistsAsync(containerName, "/id");
+            
+            Microsoft.Azure.Cosmos.CosmosClient client = new Microsoft.Azure.Cosmos.CosmosClient(configurationSection);
+            CosmosDbService cosmosDbService = new CosmosDbService(client, "unzipdb", "documentinfo");
+            Microsoft.Azure.Cosmos.DatabaseResponse database = await client.CreateDatabaseIfNotExistsAsync("unzipdb");
+            await database.Database.CreateContainerIfNotExistsAsync("documentinfo", "/documentId");
 
             return cosmosDbService;
         }

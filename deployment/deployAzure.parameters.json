@@ -21,10 +21,7 @@
             "value": "documentinfo"
         },
         "CosmosDbConnection" : {
-                "Account": "https://unzipeverything-consmosdb-efx7q.documents.azure.com:443/",
-                "Key": "zdBnzvLgkTGdQtWFSsMLWDu7dkTvvxGCimEVdZBBSzZENt3TprdNnRgD6M0jFWV4l5s8xk41dDCqmOL3Q2yTCw==",
-                "DatabaseName": "unzipdb",
-                "ContainerName": "documentinfo"
+            "value": "AccountEndpoint=https://unzipeverything-consmosdb-efx7q.documents.azure.com:443/;AccountKey=zdBnzvLgkTGdQtWFSsMLWDu7dkTvvxGCimEVdZBBSzZENt3TprdNnRgD6M0jFWV4l5s8xk41dDCqmOL3Q2yTCw==;"
         }
     }
 }
