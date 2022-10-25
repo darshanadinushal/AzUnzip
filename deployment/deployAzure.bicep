@@ -15,7 +15,7 @@ param PasswordForZips string
 
 @description('Password for unzipping secure/encrypted zip files')
 @secure()
-param CosmosDbConnection object
+param CosmosDbConnection string
 
 @description('Enable public network traffic to access the account; if set to Disabled, public network traffic will be blocked even before the private endpoint is created')
 @allowed([
@@ -116,6 +116,7 @@ resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
     publicNetworkAccess: publicNetworkAccess
   }
 }
+
 
 
 // resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
