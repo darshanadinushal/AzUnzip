@@ -144,13 +144,13 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
 
 resource privateDnsZones 'Microsoft.Network/privateDnsZones@2020-06-01' = {
   name: privatelinkEndpoint
-  location: location
+  location: 'global'
   properties: {}
 }
 
 resource privatelinkvnet 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@2020-06-01' = {
   name: vnetLinkName
-  location: location
+  location: 'global'
   parent: privateDnsZones
   properties: {
     registrationEnabled: false
