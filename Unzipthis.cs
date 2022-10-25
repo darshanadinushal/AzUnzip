@@ -36,7 +36,7 @@ namespace AzUnzipEverything
             }
             catch (Exception ex)
             {
-                _logger.LogInformation("Something went wrong while processing {blobName}, Error: {exception}", name,
+                _logger.LogInformation("Something went wrong while processing {blobName}, Error:{exception}", name,
                     ex.Message);
             }
         }
