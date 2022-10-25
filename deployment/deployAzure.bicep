@@ -162,7 +162,7 @@ resource privatelinkvnet 'Microsoft.Network/privateDnsZones/virtualNetworkLinks@
 
 resource privateDnsZone 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups@2022-05-01' = {
   name: toLower('${vnetLinkName}-privateDnsZone-${suffix}')
-  dependsOn: [privateEndpoint]
+  parent: privateEndpoint
   properties: {
     privateDnsZoneConfigs: [
       {
