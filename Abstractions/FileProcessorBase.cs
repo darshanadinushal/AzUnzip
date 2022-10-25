@@ -31,7 +31,7 @@ namespace AzUnzipEverything.Abstractions
         {
             try
             {
-                _logger.LogInformation($"Start ExtractArchiveFiles");
+                _logger.LogInformation($"Start ExtractArchiveFiles remove");
                 foreach (var archiveEntry in archiveEntries.Where(entry => !entry.IsDirectory))
                 {
                     _logger.LogInformation($"Now processing {archiveEntry.Key}");
