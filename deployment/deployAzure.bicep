@@ -43,7 +43,7 @@ var subnet2Name = toLower('${baseName}-sub2-${suffix}')
 var nsgName = toLower('${baseName}-nsg-${suffix}')
 var sharedRules = loadJsonContent('./shared-nsg-rules.json', 'securityRules')
 var databaseAccountName = toLower('${baseName}-consmosdb-${suffix}')
-// var dbEndpointName = toLower('${baseName}-consmosdb-${suffix}')
+var dbEndpointName = toLower('${baseName}-consmosdb-${suffix}')
 
 
 var customRules = []
@@ -119,27 +119,27 @@ resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
 
 
 
-// resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
-//   name: dbEndpointName
-//   location: location
-//   properties: {
-//     subnet: {
-//     //  id: resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, subnet1Name)
-//     id: virtualNetwork::subnet1.id
-//     }
-//     privateLinkServiceConnections: [
-//       {
-//         name: 'MyConnection'
-//         properties: {
-//           privateLinkServiceId: databaseAccount.id
-//           groupIds: [
-//             'Sql'
-//           ]
-//         }
-//       }
-//     ]
-//   }
-// }
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
+  name: dbEndpointName
+  location: location
+  properties: {
+    subnet: {
+    //  id: resourceId('Microsoft.Network/VirtualNetworks/subnets', virtualNetworkName, subnet1Name)
+    id: virtualNetwork::subnet1.id
+    }
+    privateLinkServiceConnections: [
+      {
+        name: 'cosmosdbConnection'
+        properties: {
+          privateLinkServiceId: databaseAccount.id
+          groupIds: [
+            'Sql'
+          ]
+        }
+      }
+    ]
+  }
+}
 
 resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-05-15' = {
   parent: databaseAccount
