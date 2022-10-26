@@ -22,7 +22,7 @@ param CosmosDbConnection string
   'Enabled'
   'Disabled'
 ])
-param publicNetworkAccess string = 'Enabled'
+param publicNetworkAccess string = 'Disabled'
 
 @description('The name for the database')
 param databaseName string
@@ -246,10 +246,14 @@ resource serverFarm 'Microsoft.Web/serverfarms@2018-02-01' = {
   name: serverFarmName
   location: location
   sku: {
-    name: 'Y1'
-    tier: 'Dynamic'
+    name: 'EP1'
+    tier: 'ElasticPremium'
+    family: 'EP'
   }
-  properties: {}
+  kind: 'elastic'
+  properties: {
+    maximumElasticWorkerCount: 20
+  }
 }
 
 resource fileStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
