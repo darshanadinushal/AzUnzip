@@ -350,9 +350,9 @@ resource funcApp 'Microsoft.Web/sites@2022-03-01' = {
   }
   properties: {
     serverFarmId: serverFarm.id
-    virtualNetworkSubnetId: virtualNetwork::subnet1.id == '' ? null : virtualNetwork::subnet1.id
+    virtualNetworkSubnetId: virtualNetwork::subnet2.id
     siteConfig: {
-      vnetRouteAllEnabled: virtualNetwork::subnet1.id == '' ? false : true
+      vnetRouteAllEnabled: true
       appSettings: [
         {
           name: 'AzureWebJobsDashboard'
@@ -409,7 +409,7 @@ resource funcApp 'Microsoft.Web/sites@2022-03-01' = {
 resource functionToSubnet 'Microsoft.Web/sites/networkConfig@2020-06-01' = {
   name: '${funcAppName}/virtualNetwork'
   properties: {
-    subnetResourceId: virtualNetwork::subnet1.id
+    subnetResourceId: virtualNetwork::subnet2.id
     swiftSupported: true
   }
   dependsOn:[
