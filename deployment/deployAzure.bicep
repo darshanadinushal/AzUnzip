@@ -414,7 +414,7 @@ resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
 }
 
 resource functionToSubnet 'Microsoft.Web/sites/networkConfig@2020-06-01' = {
-  name: '${funcAppName}-virtualNetwork'
+  name: '${funcAppName}/virtualNetwork'
   properties: {
     subnetResourceId: virtualNetwork::subnet1.id
     swiftSupported: true
