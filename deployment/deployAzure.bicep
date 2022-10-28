@@ -237,7 +237,7 @@ resource funcStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
   kind: 'StorageV2'
 }
 
-resource serverFarm 'Microsoft.Web/serverfarms@2018-02-01' = {
+resource serverFarm 'Microsoft.Web/serverfarms@2022-03-01' = {
   name: serverFarmName
   location: location
   sku: {
@@ -413,15 +413,6 @@ resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
   ]
 }
 
-resource functionToSubnet 'Microsoft.Web/sites/networkConfig@2020-06-01' = {
-  name: '${funcAppName}/virtualNetwork'
-  properties: {
-    subnetResourceId: virtualNetwork::subnet1.id
-    swiftSupported: true
-  }
-  dependsOn:[
-    funcApp
-  ]
-}
+
 
 
