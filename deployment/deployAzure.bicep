@@ -44,7 +44,7 @@ var privatelinkEndpoint ='privatelink.documents.azure.com'
 var vnetLinkName =toLower('${baseName}-vlink-${suffix}')
 
 var customRules = []
-resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
+resource nsg 'Microsoft.Network/networkSecurityGroups@2022-05-01' = {
   name: nsgName
   location: location
   properties: {
@@ -52,7 +52,7 @@ resource nsg 'Microsoft.Network/networkSecurityGroups@2021-08-01' = {
   }
 }
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2019-11-01' = {
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' = {
   name: virtualNetworkName
   location: location
   properties: {
@@ -97,7 +97,7 @@ var locations = [
   }
 ]
 
-resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
+resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-08-15' = {
   name: databaseAccountName
   location: location
   kind: 'GlobalDocumentDB'
@@ -170,9 +170,7 @@ resource privateDnsZone 'Microsoft.Network/privateEndpoints/privateDnsZoneGroups
   }
 }
 
-
-
-resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-05-15' = {
+resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-08-15' = {
   parent: databaseAccount
   name: databaseName
   properties: {
@@ -182,7 +180,7 @@ resource database 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2022-05-15
   }
 }
 
-resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2022-05-15' = {
+resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2022-08-15' = {
   parent: database
   name: containerName
   properties: {
@@ -211,11 +209,7 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
   }
 }
 
-
-
-
-
-resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2018-11-01' = {
+resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
   parent: funcApp
   name: 'web'
   properties: {
@@ -225,7 +219,7 @@ resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2018-11-01' = {
   }
 }
 
-resource funcStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
+resource funcStorage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   name: funcStorageName
   location: location
   tags: {
@@ -251,7 +245,7 @@ resource serverFarm 'Microsoft.Web/serverfarms@2022-03-01' = {
   }
 }
 
-resource fileStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
+resource fileStorage 'Microsoft.Storage/storageAccounts@2022-05-01' = {
   name: fileStorageName
   location: location
   tags: {
@@ -263,7 +257,7 @@ resource fileStorage 'Microsoft.Storage/storageAccounts@2018-07-01' = {
   kind: 'StorageV2'
 }
 
-resource fileStorageName_default_input_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2018-07-01' = {
+resource fileStorageName_default_input_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-05-01' = {
   name: '${fileStorageName}/default/input-files'
   properties: {
     publicAccess: 'Blob'
@@ -273,7 +267,7 @@ resource fileStorageName_default_input_files 'Microsoft.Storage/storageAccounts/
   ]
 }
 
-resource fileStorageName_default_output_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2018-07-01' = {
+resource fileStorageName_default_output_files 'Microsoft.Storage/storageAccounts/blobServices/containers@2022-05-01' = {
   name: '${fileStorageName}/default/output-files'
   properties: {
     publicAccess: 'Blob'
@@ -283,7 +277,7 @@ resource fileStorageName_default_output_files 'Microsoft.Storage/storageAccounts
   ]
 }
 
-resource KeyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
+resource KeyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   name: KeyVaultName
   location: location
   properties: {
@@ -302,15 +296,14 @@ resource KeyVault 'Microsoft.KeyVault/vaults@2016-10-01' = {
 
 var endpoint = KeyVault.properties.vaultUri
 
-
-resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2018-02-14' = {
+resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = {
   parent: KeyVault
   name: 'add'
   properties: {
     accessPolicies: [
       {
-        tenantId: reference(funcApp.id, '2018-11-01', 'Full').identity.tenantId
-        objectId: reference(funcApp.id, '2018-11-01', 'Full').identity.principalId
+        tenantId: reference(funcApp.id, '2022-03-01', 'Full').identity.tenantId
+        objectId: reference(funcApp.id, '2022-03-01', 'Full').identity.principalId
         permissions: {
           secrets: [
             'list'
@@ -348,8 +341,7 @@ resource applicationInsights 'Microsoft.Insights/components@2020-02-02' = {
   }
 }
 
-
-resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
+resource funcApp 'Microsoft.Web/sites@2022-03-01' = {
   name: funcAppName
   location: location
   kind: 'functionapp'
