@@ -13,10 +13,6 @@ param location string = resourceGroup().location
 @secure()
 param PasswordForZips string
 
-@description('Password for unzipping secure/encrypted zip files')
-@secure()
-param CosmosDbConnection string
-
 @description('Enable public network traffic to access the account; if set to Disabled, public network traffic will be blocked even before the private endpoint is created')
 @allowed([
   'Enabled'
@@ -120,7 +116,7 @@ resource databaseAccount 'Microsoft.DocumentDB/databaseAccounts@2022-05-15' = {
 
 
 
-resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
+resource privateEndpoint 'Microsoft.Network/privateEndpoints@2022-05-01' = {
   name: dbEndpointName
   location: location
   properties: {
@@ -129,7 +125,7 @@ resource privateEndpoint 'Microsoft.Network/privateEndpoints@2021-08-01' = {
     }
     privateLinkServiceConnections: [
       {
-        name: 'cosmosdbConnection'
+        name: 'privateLinkcosmosdbcon'
         properties: {
           privateLinkServiceId: databaseAccount.id
           groupIds: [
@@ -326,7 +322,7 @@ resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2018-02-14' 
   }
 }
 
-resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = {
+resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   parent: KeyVault
   name: 'ZipPassword'
   properties: {
@@ -334,11 +330,11 @@ resource KeyVaultName_ZipPassword 'Microsoft.KeyVault/vaults/secrets@2016-10-01'
   }
 }
 
-resource KeyVaultName_CosmosDb 'Microsoft.KeyVault/vaults/secrets@2016-10-01' = {
+resource KeyVaultName_CosmosDb 'Microsoft.KeyVault/vaults/secrets@2022-07-01' = {
   parent: KeyVault
   name: 'CosmosDb'
   properties: {
-    value: CosmosDbConnection
+    value: databaseAccount.listConnectionStrings().connectionStrings[0].connectionString
   }
 }
 
@@ -416,4 +412,16 @@ resource funcApp 'Microsoft.Web/sites@2018-11-01' = {
     funcStorage
   ]
 }
+
+resource functionToSubnet 'Microsoft.Web/sites/networkConfig@2020-06-01' = {
+  name: '${funcAppName}-virtualNetwork'
+  properties: {
+    subnetResourceId: virtualNetwork::subnet1.id
+    swiftSupported: true
+  }
+  dependsOn:[
+    funcApp
+  ]
+}
+
 

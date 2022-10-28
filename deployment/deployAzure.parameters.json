@@ -19,9 +19,6 @@
         },
         "containerName": {
             "value": "documentinfo"
-        },
-        "CosmosDbConnection" : {
-            "value": "AccountEndpoint=https://unzipeverything-consmosdb-efx7q.documents.azure.com:443/;AccountKey=dSBSAvi3FprPl6oPTgyfqpbLXGFodJyMytIfvHviugvho2VSajrIv2GW1QdtkpsWDXIFkN71KFYFXfrgHdamhA==;"
         }
     }
 }
