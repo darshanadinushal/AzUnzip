@@ -402,7 +402,6 @@ resource funcApp 'Microsoft.Web/sites@2022-03-01' = {
     }
   }
   dependsOn: [
-
     funcStorage
   ]
 }
