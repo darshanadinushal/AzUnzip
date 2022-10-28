@@ -75,7 +75,16 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2022-05-01' = {
         name: subnet2Name
         properties: {
           addressPrefix: '10.0.1.0/24'
+          delegations: [
+            {
+                name: 'Microsoft.Web.serverFarms'
+                properties: {
+                    serviceName: 'Microsoft.Web/serverFarms'
+                }
+            } 
+        ]
         }
+        
       }
     ]
   }
