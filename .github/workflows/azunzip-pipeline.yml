@@ -41,5 +41,5 @@ jobs:
         subscriptionId: 6a96e058-3943-4d73-83bd-4ca24bad6230
         resourceGroupName: ${{ env.ResourceGroupName }}
         template: ./deployment/deployAzure.bicep
-        parameters: ./deployment/deployAzure.parameters.json
+        parameters: ${{ secrets.AZUNZIPSECRETS }}
     
