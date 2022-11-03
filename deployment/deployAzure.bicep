@@ -218,7 +218,7 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
   }
 }
 
-resource funcAppName_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+resource sourcecontrol_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
   parent: funcApp
   name: 'web'
   properties: {
@@ -302,8 +302,6 @@ resource KeyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   }
   dependsOn: []
 }
-
-var endpoint = KeyVault.properties.vaultUri
 
 resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = {
   parent: KeyVault
@@ -405,7 +403,7 @@ resource funcApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'KeyVaultUri'
-          value: endpoint
+          value: KeyVault.properties.vaultUri
         }
       ]
     }
