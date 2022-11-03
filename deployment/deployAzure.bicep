@@ -303,6 +303,8 @@ resource KeyVault 'Microsoft.KeyVault/vaults@2022-07-01' = {
   dependsOn: []
 }
 
+var endpoint = KeyVault.properties.vaultUri
+
 resource KeyVaultName_add 'Microsoft.KeyVault/vaults/accessPolicies@2022-07-01' = {
   parent: KeyVault
   name: 'add'
@@ -403,7 +405,7 @@ resource funcApp 'Microsoft.Web/sites@2022-03-01' = {
         }
         {
           name: 'KeyVaultUri'
-          value: KeyVault.properties.vaultUri
+          value: endpoint
         }
       ]
     }
