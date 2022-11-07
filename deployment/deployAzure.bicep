@@ -218,7 +218,7 @@ resource container 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/container
   }
 }
 
-resource sourcecontrol_web 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
+resource sourcecontrolweb 'Microsoft.Web/sites/sourcecontrols@2022-03-01' = {
   parent: funcApp
   name: 'web'
   properties: {
